@@ -40,7 +40,7 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+            dt = (now - lastTime) / 1000.0; //ms / 1000 = ps
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
@@ -65,7 +65,7 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
-        lastTime = Date.now();
+        lastTime = Date.now(); // Date.now() retures a string representing how many milliseconds have elaped since 1970-1-1 00:00:00.
         main();
     }
 
@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        // checkCollisions(); //TODO: Check if this call is needed.
     }
 
     /* This is called by the update function and loops through all of the
@@ -116,7 +116,7 @@ var Engine = (function(global) {
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
-            numCols = 5,
+            numCols = 5, //TODO: Update to be a bigger scene.
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -133,7 +133,7 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-            }
+            } //rowImages[1] is the rul. The background is drawing every tick. TODO: Can it be drawn just once?
         }
 
         renderEntities();
@@ -159,7 +159,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        // TODO: If called in init, maybe a extrance picture. If called after game over, maybe a closing picture. Asking if you wannna play again, telling you how much scores you got.
     }
 
     /* Go ahead and load all of the images we know we're going to need to

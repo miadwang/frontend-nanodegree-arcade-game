@@ -58,14 +58,14 @@
                  */
                 if(isReady()) {
                     readyCallbacks.forEach(function(func) { func(); });
-                }
+                } // Call isReady after loading each image. Now the readyCallbaks is an empty string. Init will be pushed later. //TODO: Could it just be called once after all images are loaded?
             };
 
             /* Set the initial cache value to false, this will change when
              * the image's onload event handler is called. Finally, point
              * the image's src attribute to the passed in URL.
              */
-            resourceCache[url] = false;
+            resourceCache[url] = false; // Declare the url property and set it to false. It helps isReady. If one image is not successfully loaded, the url property will still be false. It need attention that image loading could fail!!!
             img.src = url;
         }
     }
