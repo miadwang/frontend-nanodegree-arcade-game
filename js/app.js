@@ -398,5 +398,3 @@ $(document).on('click', function(e) {
     else player.handleInputMouse(x, y);
   }
 });
-
-//TODO: 12) Optional: add animation. 14) Optional: add share button 16) Optional: zoom position problem
