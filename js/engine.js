@@ -26,7 +26,7 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 707;
-    canvas.height = 1010;
+    canvas.height = 868;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -57,6 +57,10 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
+
+        if (life === 0) {
+            restart();
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -141,7 +145,7 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 - 50);
             } //rowImages[1] is the rul. The background is drawing every tick. TODO: Can it be drawn just once?
         }
 
@@ -185,6 +189,11 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/selector.png',
         'images/gem-blue.png',
         'images/gem-green.png',
         'images/gem-orange.png',
@@ -193,7 +202,9 @@ var Engine = (function(global) {
         'images/key.png',
         'images/rock.png',
     ]);
+    Resources.onReady(initNewChar);
     Resources.onReady(init);
+    Resources.onReady(showChars);
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developers can use it more easily

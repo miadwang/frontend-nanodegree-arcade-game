@@ -1,3 +1,23 @@
 body {
     text-align: center;
 }
+
+.success-text,
+.fail-text {
+  display: none;
+  position: absolute;
+  z-index: 999;
+}
+
+.fail-text {
+  background-color: #424242;
+  background-color: rgba(66, 66, 66, 0.69);
+  text-align: center;
+  color: white;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+canvas {
+  margin-top: 20px;
+}
