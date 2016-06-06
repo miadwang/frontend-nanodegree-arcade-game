@@ -58,6 +58,7 @@ var Engine = (function(global) {
          */
         win.requestAnimationFrame(main);
 
+        //When life = 0, game will restart and user can choose character again. Function showChars (in function restart defined in app.js) needs be called after 'win.requestAnimationFrame(main);' in order show the 5 characters on top of the game background.
         if (life === 0) {
             restart();
         }
@@ -202,6 +203,8 @@ var Engine = (function(global) {
         'images/key-small.png',
         'images/rock.png',
     ]);
+
+    //Functions initNewChar and showChars (defined in app.js) initiate choosing character and hide the old player by setting isActive to false.
     Resources.onReady(initNewChar);
     Resources.onReady(init);
     Resources.onReady(showChars);
