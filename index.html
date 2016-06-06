@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Effective JavaScript: Frogger</title>
+  <meta name="viewport" content="width=960px, user-scalable=no">
+  <title>Frogger</title>
   <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,7 +18,7 @@
     <li>You have 5 lives. 1 HEART -- 3 lives.</li>
     <li>Collecting GEM and STAR will increase your score. 1 GEM -- 1 point. 1 STAR -- 5 points.</li>
     <li>Rock blocks your way.</li>
-    <li><em>Try to have more success counts and points!</em></li>
+    <li><b>Try to have more success counts and points!</b></li>
     </ul>
 
     <div class="data">
@@ -28,7 +29,7 @@
 
     <div class="button">
       <button class="restart" onclick="restart()">Restart</button>
-      <!-- <button class="share">Share My Score</button> -->
+      <button class="enter" onclick="enter()">Sellect the Character</button>
     </div>
 
     <div class="event-text">
