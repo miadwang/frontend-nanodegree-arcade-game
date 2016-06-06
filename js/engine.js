@@ -84,7 +84,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions(); //TODO: Check if this call is needed.
+        // checkCollisions(); //
     }
 
     /* This is called by the update function and loops through all of the
@@ -146,7 +146,7 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 - 50);
-            } //rowImages[1] is the rul. The background is drawing every tick. TODO: Can it be drawn just once?
+            } //rowImages[1] is the rul.
         }
 
         renderEntities();
@@ -176,7 +176,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // TODO: If called in init, maybe a extrance picture. If called after game over, maybe a closing picture. Asking if you wannna play again, telling you how much scores you got.
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -194,12 +194,12 @@ var Engine = (function(global) {
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
         'images/selector.png',
-        'images/gem-blue.png',
-        'images/gem-green.png',
-        'images/gem-orange.png',
-        'images/star.png',
-        'images/heart.png',
-        'images/key.png',
+        'images/gem-blue-small.png',
+        'images/gem-green-small.png',
+        'images/gem-orange-small.png',
+        'images/star-small.png',
+        'images/heart-small.png',
+        'images/key-small.png',
         'images/rock.png',
     ]);
     Resources.onReady(initNewChar);

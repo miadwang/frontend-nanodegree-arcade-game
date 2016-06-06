@@ -58,7 +58,7 @@
                  */
                 if(isReady()) {
                     readyCallbacks.forEach(function(func) { func(); });
-                } // Call isReady after loading each image. Now the readyCallbaks is an empty string. Init will be pushed later. //TODO: Could it just be called once after all images are loaded?
+                } // Call isReady after loading each image. Now the readyCallbaks is an empty string. Init will be pushed later.
             };
 
             /* Set the initial cache value to false, this will change when

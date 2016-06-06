@@ -39,8 +39,8 @@ Enemy.prototype.render = function() {
 var Element = function() {
   this.row = Math.floor(Math.random() * 6 + 2);
   this.col = Math.floor(Math.random() * 6 + 1);
-  this.x = (this.col - 1) * 101;
-  this.y = (this.row - 1) * 83 - 73;
+  this.x = (this.col - 1) * 101 + 22;
+  this.y = (this.row - 1) * 83 - 20;
   this.duration = Math.floor(Math.random() * 100000 + 3000);
   this.alive = true;
   this.start = Date.now();
@@ -71,10 +71,10 @@ Element.prototype.replace = function() {
 var Gem = function() {
   Element.call(this);
   this.color = Math.floor(Math.random() * 2 + 1);
-  if (this.color === 1) this.sprite = 'images/gem-blue.png';
-  if (this.color === 2) this.sprite = 'images/gem-green.png';
-  if (this.color === 3) this.sprite = 'images/gem-orange.png';
-  this.rect = {x: (this.x), y: (this.y), width: 98, height: 66};
+  if (this.color === 1) this.sprite = 'images/gem-blue-small.png';
+  if (this.color === 2) this.sprite = 'images/gem-green-small.png';
+  if (this.color === 3) this.sprite = 'images/gem-orange-small.png';
+  this.rect = {x: (this.x + 2), y: (this.y + 34), width: 55, height: 61};
 };
 
 Gem.prototype = Object.create(Element.prototype);
@@ -93,8 +93,8 @@ Gem.prototype.update = function() {
 
 var Star = function() {
   Element.call(this);
-  this.sprite = 'images/star.png';
-  this.rect = {x: (this.x), y: (this.y), width: 98, height: 66};
+  this.sprite = 'images/star-small.png';
+  this.rect = {x: (this.x + 2), y: (this.y + 32), width: 55, height: 55};
 };
 
 Star.prototype = Object.create(Element.prototype);
@@ -113,8 +113,8 @@ Star.prototype.update = function() {
 
 var Heart = function() {
   Element.call(this);
-  this.sprite = 'images/heart.png';
-  this.rect = {x: (this.x), y: (this.y), width: 98, height: 66};
+  this.sprite = 'images/heart-small.png';
+  this.rect = {x: (this.x + 4), y: (this.y + 28), width: 52, height: 52};
 };
 
 Heart.prototype = Object.create(Element.prototype);
@@ -133,12 +133,12 @@ Heart.prototype.update = function() {
 
 var Key = function() {
   Element.call(this);
-  this.sprite = 'images/key.png';
-  this.rect = {x: (this.x), y: (this.y), width: 98, height: 66};
+  this.sprite = 'images/key-small.png';
+  this.rect = {x: (this.x + 14), y: (this.y + 33), width: 30, height: 54};
 };
 
 Key.prototype = Object.create(Element.prototype);
-Key.prototype.constructor = Heart;
+Key.prototype.constructor = Key;
 
 Key.prototype.update = function() {
   if (Date.now() > this.end) {
@@ -152,6 +152,8 @@ Key.prototype.update = function() {
 
 var Rock = function() {
   Element.call(this);
+  this.x = (this.col - 1) * 101;
+  this.y = (this.row - 1) * 83 - 73;
   this.sprite = 'images/rock.png';
   this.rect = {x: (this.x + 1), y: (this.y + 77), width: 98, height: 66};
 };
@@ -207,7 +209,7 @@ Player.prototype.update = function(dt) {
     this.row = 1.001;
     setTimeout(function() {
       player = new Player(chars[index]);
-    }, 2000);
+    }, 1500);
     success += 1;
     updateSuccess();
   }
@@ -303,27 +305,26 @@ var updateSuccess = function() {
 };
 
 var showSuccessText = function(player) {
-  console.log('Success');
   var successText = $('.success-text');
   successText.css({
     'display': 'block',
-    'top': $('canvas').offset().top + player.y,
-    'left': $('canvas').offset().left + player.x
+    'top': $('canvas').offset().top + 20,
+    'left': $('canvas').offset().left + player.x - 38
   });
-  setTimeout(function() {successText.css('display', 'block');}, 2000);
+  setTimeout(function() {successText.css('display', 'none');}, 1500);
 };
 
 var showFailText = function() {
-  console.log('Fail');
   var failText = $('.fail-text');
   failText.css({
     'display': 'block',
     'top': $('canvas').offset().top,
     'left': $('canvas').offset().left,
     'width': $('canvas').width(),
-    'height': $('canvas').height()
+    'height': $('canvas').height(),
+    'line-height': $('canvas').height() + 'px'
   });
-  setTimeout(function() {failText.css('display', 'none');}, 3000);
+  setTimeout(function() {failText.css('display', 'none');}, 1500);
 };
 
 var restart = function() {
@@ -358,4 +359,4 @@ document.addEventListener('keyup', function(e) {
   else player.handleInput(allowedKeys[e.keyCode]);
 });
 
-//TODO: 11) CSS styles. 12) Optional: add animation. 13) Change image size and rect offset.
+//TODO: 12) Optional: add animation. 14) Optional: add share button 15) Add mouse control
