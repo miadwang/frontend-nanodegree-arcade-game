@@ -220,11 +220,17 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(key) {
-  // console.log(rock.row, rock.col);
   if (key === 'left' && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
   if (key === 'up' && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
   if (key === 'right' && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
   if (key === 'down' && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
+};
+
+Player.prototype.handleInputMouse = function(x, y) {
+  if (this.x - 101 < x && x < this.x && this.y + 62 < y && y < this.y + 62 + 83 && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
+  if (this.x < x && x < this.x + 101 && this.y + 62 - 83 < y && y < this.y + 62 && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
+  if (this.x + 101 < x && x < this.x + 101 + 101 && this.y + 62 < y && y < this.y + 62 + 83 && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
+  if (this.x < x && x < this.x + 101 && this.y + 62 + 83 < y && y < this.y + 62 + 83 + 83 && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
 };
 
 Player.prototype.checkEnemyCollision = function () {
@@ -275,6 +281,31 @@ var chooseChar = function(key) {
   }
   if (key === 'enter') {
     player = new Player(chars[index]);
+  }
+};
+
+var chooseCharMouse = function(x, y) {
+  if (750 < y && y < 868) {
+    if (101 < x && x < 202) {
+      index = 0;
+      selectorX = 101;
+    }
+    if (202 < x && x < 303) {
+      index = 1;
+      selectorX = 202;
+    }
+    if (303 < x && x < 404) {
+      index = 2;
+      selectorX = 303;
+    }
+    if (404 < x && x < 505) {
+      index = 3;
+      selectorX = 404;
+    }
+    if (505 < x && x < 606) {
+      index = 4;
+      selectorX = 505;
+    }
   }
 };
 
@@ -359,4 +390,13 @@ document.addEventListener('keyup', function(e) {
   else player.handleInput(allowedKeys[e.keyCode]);
 });
 
-//TODO: 12) Optional: add animation. 14) Optional: add share button 15) Add mouse control
+$(document).on('click', function(e) {
+  var x = e.pageX - $(e.target).offset().left;
+  var y = e.pageY - $(e.target).offset().top;
+  if (e.target === document.querySelector('canvas')) {
+    if (!player.isActive) chooseCharMouse(x, y);
+    else player.handleInputMouse(x, y);
+  }
+});
+
+//TODO: 12) Optional: add animation. 14) Optional: add share button 16) Optional: zoom position problem
