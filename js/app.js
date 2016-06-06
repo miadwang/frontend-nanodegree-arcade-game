@@ -418,6 +418,10 @@ var restart = function() {
   showChars();
 };
 
+var enter = function() {
+  player = new Player(chars[index]);
+};
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -453,6 +457,17 @@ document.addEventListener('keyup', function(e) {
 $(document).on('click', function(e) {
   var x = e.pageX - $(e.target).offset().left;
   var y = e.pageY - $(e.target).offset().top;
+  if (e.target === document.querySelector('canvas')) {
+    //Different functions to handle key input depending on the property isActive.
+    if (!player.isActive) chooseCharMouse(x, y);
+    else player.handleInputMouse(x, y);
+  }
+});
+
+$(document).on('touchstart', function(e) {
+  // e.preventDefault();
+  var x = e.originalEvent.touches[0].pageX - $(e.target).offset().left;
+  var y = e.originalEvent.touches[0].pageY - $(e.target).offset().top;
   if (e.target === document.querySelector('canvas')) {
     //Different functions to handle key input depending on the property isActive.
     if (!player.isActive) chooseCharMouse(x, y);
