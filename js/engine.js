@@ -57,11 +57,6 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
-
-        //When life = 0, game will restart and user can choose character again. Function showChars (in function restart defined in app.js) needs be called after 'win.requestAnimationFrame(main);' in order show the 5 characters on top of the game background.
-        if (life === 0) {
-            restart();
-        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -105,6 +100,7 @@ var Engine = (function(global) {
         });
 
         player.update();
+        selector.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -170,6 +166,7 @@ var Engine = (function(global) {
         });
 
         player.render();
+        selector.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -204,10 +201,9 @@ var Engine = (function(global) {
         'images/rock.png',
     ]);
 
-    //Functions initNewChar and showChars (defined in app.js) initiate choosing character and hide the old player by setting isActive to false.
-    Resources.onReady(initNewChar);
+    //Function initData (defined in app.js) initiates choosing character and hide the old player by setting isActive to false.
+    Resources.onReady(initData);
     Resources.onReady(init);
-    Resources.onReady(showChars);
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developers can use it more easily

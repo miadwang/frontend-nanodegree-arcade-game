@@ -12,8 +12,8 @@ Open **index.html** in a browser will run the game.
 
 ## How to play
 
-- Move to the character you like using LEFT and RIGHT keys or your mouse, and then hit ENTER to choose the character.
-- **Use UP, DOWN, LEFT, and RIGHT keys or your mouse to move the player.** The goal of the player is to reach the water and avoid colliding into bugs. KEY will send you directly to the water. Only positions next to the the player is clickable.
+- Move to the character you like using LEFT and RIGHT keys or your mouse/finger, and then hit ENTER or the "Select the Character" button to choose the character.
+- **Use UP, DOWN, LEFT, and RIGHT keys or your mouse/finger to move the player.** The goal of the player is to reach the water and avoid colliding into bugs. KEY will send you directly to the water. Only positions next to the the player is clickable.
 - You have 5 lives. 1 HEART -- 3 lives.
 - Collecting GEM and STAR will increase your score. 1 GEM -- 1 point. 1 STAR -- 5 points.
 - Rock blocks your way.</li>

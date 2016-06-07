@@ -1,20 +1,22 @@
+'use strict';
     //Initial x coordinate of all bugs. Highest speed of all bugs. Lowest speed of all bugs.
-var initialLoc = -101,
-    bugHighSpeed = 150,
-    bugLowSpeed = 50,
+var BUG_INITIAL_X = -101,
+    BUG_HIGH_SPEED = 150,
+    BUG_LOW_SPEED = 50,
     //Interval for generating a new set of bugs and kill the oldest set of bugs.
-    interval = 3000,
-    // Urls of the selector and all characters, used for choosing character.
-    selector = 'images/selector.png',
-    chars = ['images/char-boy.png', 'images/char-cat-girl.png', 'images/char-horn-girl.png', 'images/char-pink-girl.png', 'images/char-princess-girl.png'];
+    BUG_INTERVAL = 3000,
+    //User's points, lives left, and success counts.
+    score,
+    life,
+    success;
 
 // Enemies our player must avoid
 var Enemy = function() {
   // Variables applied to each of our instances go here,
   // we've provided one for you to get started
   this.row = Math.floor(Math.random() * 7 + 2);
-  this.speed = Math.floor(Math.random() * (bugHighSpeed - bugLowSpeed + 1) + bugLowSpeed);
-  this.x = initialLoc;
+  this.speed = Math.floor(Math.random() * (BUG_HIGH_SPEED - BUG_LOW_SPEED + 1) + BUG_LOW_SPEED);
+  this.x = BUG_INITIAL_X;
   this.y = (this.row - 1) * 83 - 73;
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
@@ -26,9 +28,9 @@ var Enemy = function() {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+  // You should multiply any movement by the dt parameter
+  // which will ensure the game runs at the same speed for
+  // all computers.
   this.x += dt * this.speed;
   this.rect.x = this.x + 1;
   this.rect.y = this.y + 77;
@@ -66,21 +68,34 @@ Element.prototype.checkElementCollision = function() {
   return false;
 };
 
-//Replace an element.
+//Update an element to a new position.
 Element.prototype.replace = function() {
-  var pos = allElements.indexOf(this);
-  allElements.splice(pos, 1);
-  allElements.push(new this.constructor());
+  this.row = Math.floor(Math.random() * 7 + 2);
+  this.col = Math.floor(Math.random() * 6 + 1);
+  this.x = (this.col - 1) * 101 + 22;
+  this.y = (this.row - 1) * 83 - 20;
+  this.duration = Math.floor(Math.random() * 60000 + 2000);
+  this.start = Date.now();
+  this.end = this.start + this.duration;
+  while (this.checkDuplicatedPos()) {
+    this.replace();
+  }
+};
+
+Element.prototype.checkDuplicatedPos = function() {
+  for (var i = 0, length = allElements.length; i < length; i++) {
+    if (this !== allElements[i] && this.row === allElements[i].row && this.col === allElements[i].col) {
+      return true;
+    }
+  }
+  return false;
 };
 
 //Player can get 1 point when hitting a Gem.
 var Gem = function() {
   Element.call(this);
   //The color of the gem is random.
-  this.color = Math.floor(Math.random() * 2 + 1);
-  if (this.color === 1) this.sprite = 'images/gem-blue-small.png';
-  if (this.color === 2) this.sprite = 'images/gem-green-small.png';
-  if (this.color === 3) this.sprite = 'images/gem-orange-small.png';
+  this.setColor();
   //The rectangle outline of the gem, not the gem image.
   this.rect = {x: (this.x + 2), y: (this.y + 34), width: 55, height: 61};
 };
@@ -88,16 +103,27 @@ var Gem = function() {
 Gem.prototype = Object.create(Element.prototype);
 Gem.prototype.constructor = Gem;
 
+Gem.prototype.setColor = function() {
+  this.color = Math.floor(Math.random() * 2 + 1);
+  if (this.color === 1) this.sprite = 'images/gem-blue-small.png';
+  if (this.color === 2) this.sprite = 'images/gem-green-small.png';
+  if (this.color === 3) this.sprite = 'images/gem-orange-small.png';
+};
+
 //Replace a gem if it is outdated or hitted by the player.
 Gem.prototype.update = function() {
+  this.rect.x = this.x + 2;
+  this.rect.y = this.y + 34;
   if (Date.now() > this.end) {
     this.replace();
+    this.setColor();
   }
   if (this.checkElementCollision()) {
     //Player will get 1 point when hitting a gem.
     score++;
     updateScore();
     this.replace();
+    this.setColor();
   }
 };
 
@@ -114,6 +140,8 @@ Star.prototype.constructor = Star;
 
 //Replace the star if it is outdated or hitted by the player.
 Star.prototype.update = function() {
+  this.rect.x = this.x + 2;
+  this.rect.y = this.y + 32;
   if (Date.now() > this.end) {
     this.replace();
   }
@@ -138,6 +166,8 @@ Heart.prototype.constructor = Heart;
 
 //Replace the heart if it is outdated or hitted by the player.
 Heart.prototype.update = function() {
+  this.rect.x = this.x + 4;
+  this.rect.y = this.y + 28;
   if (Date.now() > this.end) {
     this.replace();
   }
@@ -162,6 +192,8 @@ Key.prototype.constructor = Key;
 
 //Replace the key if it is outdated or hitted by the player.
 Key.prototype.update = function() {
+  this.rect.x = this.x + 14;
+  this.rect.y = this.y + 33;
   if (Date.now() > this.end) {
     this.replace();
   }
@@ -185,26 +217,24 @@ var Rock = function() {
 Rock.prototype = Object.create (Element.prototype);
 Rock.prototype.constructor = Rock;
 
-//Replace the rock and asign the new rock to variable rock.
-//Variable rock will be used in functions handleInput and handleInputMouse.
-Rock.prototype.replace = function() {
-  var pos = allElements.indexOf(this);
-  allElements.splice(pos, 1);
-  rock = new Rock();
-  allElements.push(rock);
-};
-
 //Replace the rock if it is outdated.
 Rock.prototype.update = function() {
-  if (Date.now() > this.end) this.replace();
+  this.rect.x = this.x + 1;
+  this.rect.y = this.y + 77;
+  if (Date.now() > this.end) {
+    this.replace();
+    //Rock has different image position from other elements.
+    this.x = (this.col - 1) * 101;
+    this.y = (this.row - 1) * 83 - 73;
+  }
 };
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(sprite) {
-  //Property isActive will be set to false before choosing character and the player will be hidden, user input will be handled by functions chooseChar and chooseCharMouse. Property isActive will be set to false after user chooses a character generating a new player as well everytime a new player is generated and player will be rendered to the screeen, user input will be handled by functions handleInput and handleInputMouse.
-  this.isActive = true;
+  //Property isActive is set to false before choosing character and the player will be hidden, user input will be handled by functions chooseChar and chooseCharMouse. Property isActive will be set to true after user chooses a character and player will be rendered to the screeen, user input will be handled by functions handleInput and handleInputMouse.
+  this.isActive = false;
   this.row = 10;
   this.col = 4;
   this.x = (this.col - 1) * 101;
@@ -212,8 +242,12 @@ var Player = function(sprite) {
   this.sprite = sprite;
   //The rectangle outline of the player, not the player image.
   this.rect = {x: (this.x + 17), y: (this.y + 63), width: 66, height: 78};
-  //Property isAlive will be set to false after player hits a bug.
+  //Property isAlive will be set to false after the player hits a bug and before the player is back to the original position.
   this.isAlive = true;
+  //Property isShaking will be set to true after the player hits a bug and before the player is back to the original position.
+  this.isShaking = false;
+  //Property isHidden will be set to true and false alternately to show a shaking player.
+  this.isHidden = false;
 };
 
 Player.prototype.update = function(dt) {
@@ -221,158 +255,160 @@ Player.prototype.update = function(dt) {
   this.y = (this.row - 1) * 83 - 60;
   this.rect.x = this.x + 17;
   this.rect.y = this.y + 63;
-  //Variable life will decrease by 1 after player hits a bug, and a new player will be generated.
-  if (this.checkEnemyCollision()) {
-    this.isAlive = false;
+  //Variable life will decrease by 1 after player hits a bug.
+  if (!this.isShaking) this.checkEnemyCollision();
+  if (!this.isAlive && !this.isShaking) {
     life -= 1;
     updateLife();
-    //If life = 0, game will end, no new player will be generated until user chooses a character. Game will restart (Line 62 in engine.js).
+    this.isShaking = true;
+    setTimeout(this.positionBack.bind(this), 1500);
+    //If life = 0, all data will be reset.
     if (life === 0) {
       //Show gameover text.
       showFailText();
-      //Set the player to the original position
-      player.row = 10;
-      player.y = 737;
-      return;
+      initData();
     }
-    player = new Player(chars[index]);
   }
+
   //Variable life will increase by 1 after player reaches the water.
   if (this.row === 1) {
-    //Set this.row a little larger than 1 is to ensure below functions will only be called once and the old player will stay at the same position for 1.5s (hidden).
+    //Set this.row a little larger than 1 is to ensure below functions will only be called once and the player will stay at the same position for 1.5s.
     this.row = 1.001;
     //Show sucess text.
     showSuccessText(this);
-    //A new player will be generated after 1.5s.
-    setTimeout(function() {
-      player = new Player(chars[index]);
-    }, 1500);
+    setTimeout(this.positionBack.bind(this), 1500);
     success += 1;
     updateSuccess();
   }
 };
 
 Player.prototype.render = function() {
-  //Property isActive will be set to false before choosing character, at that time the player will not be rendered to the screen. After user chooses a character, a new player will be generated and isActive will be set to true, player will the rendered. Everytime a new player is generated, isActive will be set to true, player will the rendered.
-  if (this.isActive) ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  //Property isActive will be set to false before choosing character, at that time the player will not be rendered to the screen. After user chooses a character, isActive will be set to true, player will the rendered.
+  if (this.isActive && !this.isShaking) ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  //Property isHidden will be set to true and false alternately to show a shaking player.
+  if (this.isShaking) {
+    if (!this.isHidden) {
+      ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+      this.isHidden = true;
+      return;
+    }
+    if (this.isHidden) this.isHidden = false;
+  }
+};
+
+//Set the position of the player back.
+Player.prototype.positionBack = function() {
+  this.row = 10;
+  this.col = 4;
+  this.isAlive = true;
+  this.isShaking = false;
 };
 
 //This function handles left, up, right and down key input. It moves the player inside the canvas if it is not blocked by a rock.
 Player.prototype.handleInput = function(key) {
-  if (key === 'left' && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
-  if (key === 'up' && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
-  if (key === 'right' && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
-  if (key === 'down' && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
+  if (this.row !== 1.001 && !this.isShaking) {
+    if (key === 'left' && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
+    if (key === 'up' && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
+    if (key === 'right' && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
+    if (key === 'down' && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
+  }
 };
 
-//This function handles mouse input. It moves the player inside the canvas if it is not blocked by a rock.
+//This function handles mouse and touch input. It moves the player inside the canvas if it is not blocked by a rock.
 Player.prototype.handleInputMouse = function(x, y) {
-  if (this.x - 101 < x && x < this.x && this.y + 62 < y && y < this.y + 62 + 83 && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
-  if (this.x < x && x < this.x + 101 && this.y + 62 - 83 < y && y < this.y + 62 && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
-  if (this.x + 101 < x && x < this.x + 101 + 101 && this.y + 62 < y && y < this.y + 62 + 83 && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
-  if (this.x < x && x < this.x + 101 && this.y + 62 + 83 < y && y < this.y + 62 + 83 + 83 && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
+  if (this.row !== 1.001 && !this.isShaking) {
+    if (this.x - 101 < x && x < this.x && this.y + 62 < y && y < this.y + 62 + 83 && this.col > 1 && !(rock.row === this.row && rock.col === (this.col - 1))) this.col--;
+    if (this.x < x && x < this.x + 101 && this.y + 62 - 83 < y && y < this.y + 62 && this.row > 1 && !(rock.row === (this.row - 1) && rock.col === this.col)) this.row--;
+    if (this.x + 101 < x && x < this.x + 101 + 101 && this.y + 62 < y && y < this.y + 62 + 83 && this.col < 7 && !(rock.row === this.row && rock.col === (this.col + 1))) this.col++;
+    if (this.x < x && x < this.x + 101 && this.y + 62 + 83 < y && y < this.y + 62 + 83 + 83 && this.row < 10 && !(rock.row === (this.row + 1) && rock.col === this.col)) this.row++;
+  }
 };
 
 //Check if the player hits a bug.
 Player.prototype.checkEnemyCollision = function () {
   for (var i = 0, length = allEnemies.length; i < length; i++) {
     if (
-      player.rect.x < allEnemies[i].rect.x + allEnemies[i].rect.width &&
-      player.rect.x + player.rect.width > allEnemies[i].rect.x &&
-      player.rect.y < allEnemies[i].rect.y + allEnemies[i].rect.height &&
-      player.rect.y + player.rect.height > allEnemies[i].rect.y
-    ) return true;
+      this.rect.x < allEnemies[i].rect.x + allEnemies[i].rect.width &&
+      this.rect.x + this.rect.width > allEnemies[i].rect.x &&
+      this.rect.y < allEnemies[i].rect.y + allEnemies[i].rect.height &&
+      this.rect.y + this.rect.height > allEnemies[i].rect.y
+    ) this.isAlive = false;
   }
-  return false;
 };
 
-//Initial a new round of game.
-var initNewChar = function() {
-  //User's score and success times will be reset to 0. Life will be reset to 5.
-  score = 0;
-  life = 5;
-  success = 0;
-  updateLife();
-  updateScore();
-  updateSuccess();
-  //Original position of the selector image.
-  selectorX = 303;
-  selectorY = 697;
+var Selector = function() {
   //Character index. Original choice is the 3rd one.
-  index = 2;
-  //Property isActive will be set to false before choosing character and the player will be hidden, user input will be handled by functions chooseChar and chooseCharMouse.
-  player.isActive = false;
+  this.index = 2;
+  this.x = (this.index + 1) * 101;
+  this.y = 697;
+  this.sprite = 'images/selector.png';
+  this.chars = ['images/char-boy.png', 'images/char-cat-girl.png', 'images/char-horn-girl.png', 'images/char-pink-girl.png', 'images/char-princess-girl.png'];
 };
 
-//Draw selector and 5 characters to the canvas.
-var showChars = function() {
-  ctx.drawImage(Resources.get(selector), selectorX, selectorY);
-  chars.forEach(function(elt, i) {
-    ctx.drawImage(Resources.get(elt), 101 * i + 101, 687);
-  });
-  //After user shooses a character, a new player will be generated. Property isActive will be set to true. Drawing of the selector and the 5 characters will stop.
-  if (player.isActive) {
-    return;
+Selector.prototype.update = function() {
+  this.x = (this.index + 1) * 101;
+};
+
+Selector.prototype.render = function() {
+  //After user shooses a character, property isActive will be set to true. Drawing of the selector and the 5 characters will stop.
+  if (!player.isActive) {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    this.chars.forEach(function(elt, i) {
+      ctx.drawImage(Resources.get(elt), 101 * i + 101, 687);
+    });
   }
-  window.requestAnimationFrame(showChars);
 };
 
 //It handles the left, right, and enter key input when choosing character.
-var chooseChar = function(key) {
-  if (key === 'left' && index > 0) {
-    index--;
-    selectorX -= 101;
+Selector.prototype.handleInput = function(key) {
+  if (key === 'left' && this.index > 0) {
+    this.index--;
   }
-  if (key === 'right' && index < 4) {
-    index++;
-    selectorX += 101;
+  if (key === 'right' && this.index < 4) {
+    this.index++;
   }
   if (key === 'enter') {
-    player = new Player(chars[index]);
+    this.enter();
   }
 };
 
-//It handles the mouse input when choosing character.
-var chooseCharMouse = function(x, y) {
-  if (750 < y && y < 868) {
-    if (101 < x && x < 202) {
-      index = 0;
-      selectorX = 101;
-    }
-    if (202 < x && x < 303) {
-      index = 1;
-      selectorX = 202;
-    }
-    if (303 < x && x < 404) {
-      index = 2;
-      selectorX = 303;
-    }
-    if (404 < x && x < 505) {
-      index = 3;
-      selectorX = 404;
-    }
-    if (505 < x && x < 606) {
-      index = 4;
-      selectorX = 505;
-    }
+//It handles the mouse and touch input when choosing character.
+Selector.prototype.handleInputMouse = function(x, y) {
+  if (750 < y && y < 868 && 101 < x && x < 606) {
+    this.index = parseInt(x / 101) - 1;
+  }
+};
+
+//'Select the Character' button onclick function.
+Selector.prototype.enter = function() {
+  if (!player.isActive) {
+    player.sprite = this.chars[this.index];
+    player.isActive = true;
   }
 };
 
 //Create 5 new bugs at proper intervals.
 var createEnemy = function() {
   allEnemies.push(new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy());
-  setTimeout(createEnemy, interval);
+  setTimeout(createEnemy, BUG_INTERVAL);
 };
 
-//Kill 5 oldest bugs at proper intervals.
+//Kill 5 oldest bugs at proper intervals after 20s;.
 var killEnemy = function() {
-  allEnemies.splice(0, 5);
-  setTimeout(killEnemy, interval);
+  setTimeout(function() {
+    allEnemies.splice(0, 5);
+    setTimeout(killEnemy, BUG_INTERVAL);
+  }, 20000);
 };
 
 //Create 3 gems, 1 star, 1 heart, 1 key, and 1 rock.
 var createElement = function() {
   allElements.push(new Gem(), new Gem(), new Gem(), new Star(), new Heart(), new Key(), rock);
+  for (var i = 0, length = allElements.length; i < length; i++) {
+    while (allElements[i].checkDuplicatedPos()) {
+      allElements[i].replace();
+    }
+  }
 };
 
 //Update score, life and success times in HTML.
@@ -386,6 +422,24 @@ var updateLife = function() {
 
 var updateSuccess = function() {
   document.querySelector('.success').innerHTML = 'Success = ' + success;
+};
+
+//This function will be called at the beginning of the game, or when life = 0, or user click the "Restart" button.
+var initData = function() {
+  score = 0;
+  life = 5;
+  success = 0;
+  updateScore();
+  updateLife();
+  updateSuccess();
+  selector.index = 2;
+  selector.x = (selector.index + 1) * 101;
+  selector.y = 697;
+  //Below statements are redundance if initData is not called by clicking the button.
+  player.isActive = false;
+  player.isAlive = true;
+  player.isShaking = false;
+  player.positionBack();
 };
 
 //Show success and gameover text in HTML.
@@ -412,30 +466,20 @@ var showFailText = function() {
   setTimeout(function() {failText.css('display', 'none');}, 1500);
 };
 
-//If life = 0, game will restart. Called in Line 62 in engine.js.
-var restart = function() {
-  initNewChar();
-  showChars();
-};
-
-var enter = function() {
-  player = new Player(chars[index]);
-};
-
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 // Place all elements objects in an array called allElements
 var allEnemies = [],
     allElements = [],
-    //The first player is with a certain sprite and hidden from the user.
-    player = new Player('images/char-horn-girl.png');
+    //The first player is with a certain sprite.
+    player = new Player('images/char-horn-girl.png'),
     //The rock element has a identifier. It facilitates the player to check if the rock blocks the way.
-    rock = new Rock();
+    rock = new Rock(),
+    selector = new Selector();
 
 createEnemy();
-//Begin killing bugs after 20s.
-setTimeout(killEnemy, 20000);
+killEnemy();
 createElement();
 
 // This listens for key presses and sends the keys to your
@@ -449,28 +493,29 @@ document.addEventListener('keyup', function(e) {
       13: 'enter'
   };
   //Different functions to handle key input depending on the property isActive.
-  if (!player.isActive) chooseChar(allowedKeys[e.keyCode]);
+  if (!player.isActive) selector.handleInput(allowedKeys[e.keyCode]);
   else player.handleInput(allowedKeys[e.keyCode]);
 });
 
 // This listens for mouse clicks and sends the coordinates of the click relative to the canvas to Player.handleInputMouse method.
-$(document).on('click', function(e) {
+$(document).on('mouseup', function(e) {
   var x = e.pageX - $(e.target).offset().left;
   var y = e.pageY - $(e.target).offset().top;
-  if (e.target === document.querySelector('canvas')) {
+  if (e.target === document.querySelector('canvas') && player.row !== 1.001) {
     //Different functions to handle key input depending on the property isActive.
-    if (!player.isActive) chooseCharMouse(x, y);
+    if (!player.isActive) selector.handleInputMouse(x, y);
     else player.handleInputMouse(x, y);
   }
 });
 
+//This listens for touch events and sends the coordinates of the touch relative to the canvas to Player.handleInputMouse method.
 $(document).on('touchstart', function(e) {
   // e.preventDefault();
   var x = e.originalEvent.touches[0].pageX - $(e.target).offset().left;
   var y = e.originalEvent.touches[0].pageY - $(e.target).offset().top;
-  if (e.target === document.querySelector('canvas')) {
+  if (e.target === document.querySelector('canvas') && player.row !== 1.001) {
     //Different functions to handle key input depending on the property isActive.
-    if (!player.isActive) chooseCharMouse(x, y);
+    if (!player.isActive) selector.handleInputMouse(x, y);
     else player.handleInputMouse(x, y);
   }
 });
